@@ -2,6 +2,9 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
+// Middleware para parsear o corpo da requisição em JSON
+app.use(express.json());
+
 const pedidos = [
     {
         produto_id: 1,
@@ -76,6 +79,18 @@ app.get('/getEntregador/:entregadorId', (req, res) => {
   } else {
       res.status(404).json({ error: 'Entregador não encontrado ou sem pedidos' });
   }
+});
+
+// Endpoint para enviar dados de entrega
+app.post('/addPedido', (req, res) => {
+    const novoPedido = req.body;
+
+    if (novoPedido && novoPedido.produto_id && novoPedido.produto_nome && novoPedido.latitude && novoPedido.longitude && novoPedido.cliente_nome && novoPedido.entregador && novoPedido.entregador.id && novoPedido.entregador.nome) {
+        pedidos.push(novoPedido);
+        res.status(201).json({ message: 'Pedido adicionado com sucesso', pedido: novoPedido });
+    } else {
+        res.status(400).json({ error: 'Dados do pedido incompletos ou inválidos' });
+    }
 });
 
 app.listen(port, () => {
